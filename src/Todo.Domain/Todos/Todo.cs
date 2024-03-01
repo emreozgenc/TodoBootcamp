@@ -2,7 +2,7 @@
 
 namespace Todo.Domain.Todos
 {
-    public sealed class Todo : Entity
+    public sealed class Todo : Entity, IAggregateRoot
     {
         public string Title { get; private set; }
         public string Text { get; private set; }
@@ -30,11 +30,26 @@ namespace Todo.Domain.Todos
             DeadLine = todoDto.DeadLine;
             Status = todoDto.Status;
             UserId = todoDto.UserId;
+
+
+            // ... servisi
+            this.CreatedAt = DateTime.Now;
+            this.DeadLine = DateTime.Now.AddDays(-3000);
+
+
         }
 
         private Todo() : base(Guid.Empty)
         {
 
+        }
+
+        public void AssignDeadline(DateTime dateTime)
+        {
+            if(dateTime > CreatedAt)
+            {
+                throw new ArgumentException("abc");
+            }
         }
 
         public static Todo Create(Guid id, string title, string text, DateTime createdAt, DateTime deadLine, TodoStatus status, Guid userId)

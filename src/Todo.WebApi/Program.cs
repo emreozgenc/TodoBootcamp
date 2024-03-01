@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Todo.Application.Features.Todos.CreateTodo;
 using Todo.Domain.Todos;
 using Todo.Persistence;
 using Todo.Persistence.Todos;
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 });
 
 builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblies(typeof(Program).Assembly, typeof(CreateTodoCommand).Assembly));
 
 var app = builder.Build();
 

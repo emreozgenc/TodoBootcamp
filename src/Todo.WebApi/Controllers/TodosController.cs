@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+using Todo.Application.Features.Todos.CreateTodo;
+using Todo.Application.Features.Todos.GetAllTodos;
 using Todo.Domain.Todos;
 
 namespace Todo.WebApi.Controllers
@@ -10,25 +11,26 @@ namespace Todo.WebApi.Controllers
     public class TodosController : ControllerBase
     {
         private readonly ITodoRepository _todoRepository;
+        private readonly IMediator _mediator;
 
-        public TodosController(ITodoRepository todoRepository)
+        public TodosController(ITodoRepository todoRepository, IMediator mediator)
         {
             _todoRepository = todoRepository;
+            _mediator = mediator;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(TodoDto todoDto, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(CreateTodoCommand request, CancellationToken cancellationToken)
         {
-            var createdTodo = Domain.Todos.Todo.Create(todoDto);
-            await _todoRepository.CreateAsync(createdTodo);
-            return Ok(createdTodo);
+            var response = await _mediator.Send(request, cancellationToken);
+            return Ok(response);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var todos = await _todoRepository.GetAllAsync();
-            return Ok(todos);
+            var response = await _mediator.Send(new GetAllTodosQuery());
+            return Ok(response);
         }
     }
 }
